@@ -32,7 +32,7 @@ Group means are computed only for labels present in the batch. The KTO anchor is
 
 The policy is a 7,042-parameter character-level GRU (16-dimensional embeddings, 24 hidden units, 97-token fixed ASCII vocabulary). Teacher-forced logprobs sum only completion tokens, not prompt or padding tokens. The fixed dataset has 24 training pairs and eight disjoint evaluation pairs containing simple factual preferences.
 
-Before training, `scripts/train.py` deep-copies the initial policy, computes every unique training response's reference logprob, and stores values under SHA-256 keys of `[prompt, completion]`. Cache misses fail explicitly. Training reads these tensors and performs no reference forward pass. Saved caches include a fingerprint of the reference weights and round-trip through `torch.load(..., weights_only=True)`.
+Before training, `scripts/train.py` deep-copies the initial policy, computes every unique training response's reference logprob, and stores values under SHA-256 keys of `[prompt, completion]`. It saves and reloads that cache before the first optimizer step. Cache misses fail explicitly. Training reads these tensors and performs no reference forward pass. Saved caches include a fingerprint of the reference weights and round-trip through `torch.load(..., weights_only=True)`.
 
 Analytical savings count two FLOPs per multiply-add in the GRU input/recurrent matrices and output projection:
 
