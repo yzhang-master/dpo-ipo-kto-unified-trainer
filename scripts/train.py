@@ -7,7 +7,11 @@ from pathlib import Path
 
 import torch
 
-from preference_trainer.cache import build_reference_cache, reference_token_count
+from preference_trainer.cache import (
+    ReferenceLogprobCache,
+    build_reference_cache,
+    reference_token_count,
+)
 from preference_trainer.data import preference_datasets
 from preference_trainer.model import (
     CharTokenizer,
@@ -43,9 +47,14 @@ def main() -> None:
         train_pairs = train_pairs[:4]
         args.epochs = 2
 
+    output = args.output or Path(f"results/{args.method}_training.json")
+    output.parent.mkdir(parents=True, exist_ok=True)
+    cache_path = output.with_name(f"{args.method}_reference_cache.pt")
     cache_start = time.perf_counter()
     cache = build_reference_cache(reference, tokenizer, train_pairs)
     cache_seconds = time.perf_counter() - cache_start
+    cache.save(cache_path)
+    cache = ReferenceLogprobCache.load(cache_path)
     baseline = evaluate_preference_pairs(model, tokenizer, eval_pairs)
     result = train_preferences(
         model,
@@ -61,10 +70,6 @@ def main() -> None:
     train_evaluation = evaluate_preference_pairs(model, tokenizer, train_pairs)
     tokens = reference_token_count(tokenizer, train_pairs)
     per_token = matrix_forward_flops_per_token(model.config)
-    output = args.output or Path(f"results/{args.method}_training.json")
-    output.parent.mkdir(parents=True, exist_ok=True)
-    cache_path = output.with_name(f"{args.method}_reference_cache.pt")
-    cache.save(cache_path)
     torch.save(model.state_dict(), output.with_name(f"{args.method}_policy.pt"))
 
     report = {
