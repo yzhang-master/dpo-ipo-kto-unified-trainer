@@ -49,13 +49,13 @@ Measured locally with Python 3.12.3, Torch 2.15.0+cpu, seed 7, one Torch thread,
 
 | Objective | Initial loss | Final loss | Train win rate | Eval win rate, before → after | Final eval margin | Training time |
 |---|---:|---:|---:|---:|---:|---:|
-| DPO | 0.693147 | 0.186673 | 87.50% | 37.50% → 37.50% | -19.428791 | 3.009 s |
-| IPO | 25.000000 | 0.182182 | 75.00% | 37.50% → 37.50% | -2.774976 | 2.739 s |
-| KTO | 1.000000 | 0.407844 | 83.33% | 37.50% → 50.00% | -18.144058 | 2.438 s |
+| DPO | 0.693147 | 0.186673 | 87.50% | 37.50% → 37.50% | -19.428791 | 2.182 s |
+| IPO | 25.000000 | 0.182182 | 75.00% | 37.50% → 37.50% | -2.774976 | 2.391 s |
+| KTO | 1.000000 | 0.407844 | 83.33% | 37.50% → 50.00% | -18.144058 | 1.559 s |
 
 The negative evaluation margins and lack of DPO/IPO held-out improvement are retained rather than presented as successful generalization.
 
-The benchmark driver took 38.058 seconds wall time, including three fresh Python/Torch process starts. Each run cached 48 responses covering 1,570 forward tokens. At 60 epochs, each objective avoided an analytical **985,708,800 FLOPs (0.986 GFLOP)** of reference matrix work. Cache-build times were 0.025 s (DPO), 0.014 s (IPO), and 0.016 s (KTO).
+The final benchmark driver took 25.960 seconds wall time, including three fresh Python/Torch process starts. Each run saved and reloaded 48 responses covering 1,570 forward tokens. At 60 epochs, each objective avoided an analytical **985,708,800 FLOPs (0.986 GFLOP)** of reference matrix work. Cache-build times were 0.017 s (DPO), 0.016 s (IPO), and 0.016 s (KTO).
 
 These numbers describe a randomly initialized toy GRU on eight tiny held-out pairs. They are **not LLM win rates, human preferences, reward-model results, or evidence that one objective is generally better**.
 
